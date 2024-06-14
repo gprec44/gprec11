@@ -1,0 +1,948 @@
+EXP1
+import java.util.*;
+public class Exp1
+{
+	public static void main(String args[])
+	{
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter the string : ");
+		String str=sc.next();
+		int q=0,prev_q;
+		System.out.println("Initial state : "+q);
+		for(int i=0;i<str.length();i++)
+		{
+			if(str.charAt(i)!='a' && str.charAt(i)!='b' && str.charAt(i)!='c')
+			{
+				System.out.println("Given String is invalid");
+				return;
+			}
+			prev_q=q;
+			switch(q)
+			{
+				case 0 : q=(str.charAt(i)=='a' )?1:0;break;
+				case 1 : q=(str.charAt(i)=='b')?2:(str.charAt(i)=='a')?1:0;break;
+				case 2 : q=(str.charAt(i)=='c')?3:(str.charAt(i)=='a')?1:0;break;
+				case 3 : q=(str.charAt(i)=='a')?1:0;break;
+			}
+			System.out.println("Transition : q"+prev_q+" -> q"+q+"(Input : "+str.charAt(i)+")");
+		}
+		if(q==3)
+			System.out.println("ACCEPTED");
+		else
+			System.out.println("NOT ACCEPTED");
+	}
+}
+
+//(OUTPUT
+//Enter the string :
+//ababc
+//Initial state : 0
+//Transition : q0 -> q1(Input : a)
+//Transition : q1 -> q2(Input : b)
+//Transition : q2 -> q1(Input : a)
+//Transition : q1 -> q2(Input : b)
+//Transition : q2 -> q3(Input : c)
+//ACCEPTED)
+
+EXP2
+import java.util.*;
+public class Exp2 {
+   public static void main(String[] args) {
+        ArrayList<String> keywords = new ArrayList<>(Arrays.asList(
+                "if", "else", "while", "for", "int", "float", "double", "char", "String", "boolean"
+        ));
+        ArrayList<String> operators = new ArrayList<>(Arrays.asList(
+                "+", "-", "*", "/", "=", ">", "<", "!", "&", "|" ,"++","--"
+        ));
+        ArrayList<String> delimiters = new ArrayList<>(Arrays.asList(
+                "(", ")", "{", "}", "[", "]", ",", ";"
+        ));
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter program with single spaces");
+        String input = sc.nextLine();
+        String[] arr = input.split(" ");
+        int len = arr.length;
+        String[] ans = new String[len];
+        for (int i = 0; i < len; i++) {
+            if (keywords.contains(arr[i])) {
+                ans[i] = "keyword";
+            } else if (operators.contains(arr[i])) {
+                ans[i] = "operator";
+            } else if (delimiters.contains(arr[i])) {
+                ans[i] = "delimiter";
+            } else if (isIdentifier(arr[i])) {
+                ans[i] = "identifier";
+            } else if (isLiteral(arr[i])) {
+                ans[i] = "literal";
+            } else {
+                ans[i] = "unknown";
+            }
+        }
+        for (int i = 0; i < len; i++) {
+            System.out.println(arr[i] + ": " + ans[i]);
+        }
+    }
+    private static boolean isIdentifier(String str) {
+        if (Character.isDigit(str.charAt(0))) {
+            return false;
+        }
+        for (char c : str.toCharArray()) {
+            if (!Character.isLetterOrDigit(c) && c != '_') {
+                return false;
+            }
+        }
+        return true;
+    }
+    private static boolean isLiteral(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e1) {
+            try {
+                Double.parseDouble(str);
+                return true;
+            } catch (NumberFormatException e2) {
+                return false;
+            }
+        }
+    }
+}
+
+
+
+//OUTPUT
+
+//Enter program with single spaces
+//java 123 { main int
+
+//java: identifier
+//123: literal
+//{: delimiter
+//main: identifier
+//int: keyword
+
+EXP3
+
+import java.util.*;
+public class Exp3 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Number of productions:");
+        int num = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+        String[] p = new String[num];
+        System.out.println("Enter the grammar as E->E-A:");
+        for (int i = 0; i < num; i++) {
+            p[i] = scanner.nextLine();
+        }
+        for (int j = 0; j < num; j++) {
+            System.out.println("\nGRAMMAR:" + p[j]);
+             char ch1= p[j].charAt(0);
+             String lp=p[j].substring(3);
+             String spl[] =lp.split("\\|+");
+             List<String> beta=new ArrayList<>();
+             List<String> alpha=new ArrayList<>();
+             for(int i=0;i<spl.length;i++)
+             {
+            	 if(spl[i].charAt(0)==ch1)
+            	 {
+            		 alpha.add(spl[i].substring(1));
+            	 }
+            	 else
+            		 beta.add(spl[i]);
+             }
+             if(alpha.size()==0)
+             {
+            	 System.out.println(p[j]+" has no left recursion");
+            	 continue;
+             }
+             System.out.println("After removing of left recursion ");
+             System.out.print(ch1+"->");
+             for(int i=0;i<beta.size();i++)
+             {
+            	 System.out.print(beta.get(i)+""+ch1+"\'");
+            	 if(i<beta.size()-1)
+            		 System.out.print("|");
+             }
+             System.out.println();
+             System.out.print(ch1+"\'->");
+             for(int i=0;i<alpha.size();i++)
+             {
+            	 System.out.print(alpha.get(i)+""+ch1+"\'|");
+             }
+             System.out.println("e");
+             }
+    }
+}
+
+
+//OUTPUT
+
+//Enter Number of productions:3
+//Enter the grammar as E->E-A:
+//E->EA|A
+//A->a
+//E->i
+//GRAMMAR:E->EA|A
+//After removing of left recursion
+//E->AE'
+//E'->AE'|e
+
+//GRAMMAR:A->a
+//A->a has no left recursion
+
+//GRAMMAR:E->i
+//E->i has no left recursion
+
+EXP4
+
+import java.util.*;
+
+public class LeftFactoring {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the number of productions:");
+        int n = sc.nextInt();
+        sc.nextLine();
+        String[] productions = new String[n];
+        System.out.println("Enter the productions:");
+        for (int i = 0; i < n; i++) {
+            productions[i] = sc.nextLine();
+        }
+        eliminateLeftFactoring(productions);
+    }
+
+    private static void eliminateLeftFactoring(String[] productions) {
+        boolean leftFactored = false;
+        for (String production : productions) {
+            String[] parts = production.split("->");
+            String lhs = parts[0].trim();
+            String[] rhs = parts[1].split("\\|");
+            String prefix = findCommonPrefix(rhs);
+            if (!prefix.isEmpty()) 
+		{
+                leftFactored = true;
+                System.out.println(lhs + "->" + prefix + lhs + "'");
+                List<String> newRhs = new ArrayList<>();
+                for (String r : rhs) {
+                    if (r.startsWith(prefix)) {
+                        String suffix = r.substring(prefix.length()).trim();
+                        if (suffix.isEmpty()) {
+                            suffix = "";
+                        }
+                        newRhs.add(suffix);
+                    } else {
+                        newRhs.add(r);
+                    }
+                }
+                System.out.println(lhs + "'->" + String.join("|", newRhs));
+            }
+        }
+        if (!leftFactored) {
+            System.out.println("Given productions do not have left factoring");
+        }
+    }
+
+    private static String findCommonPrefix(String[] rhs) {
+        String prefix = rhs[0];
+        for (int i = 1; i < rhs.length; i++) {
+            while (rhs[i].indexOf(prefix) != 0) {
+                prefix = prefix.substring(0, prefix.length() - 1);
+                if (prefix.isEmpty()) {
+                    return "";
+                }
+            }
+        }
+        return prefix;
+    }
+}
+import java.util.*;
+import java.io.*;
+public class Exp5 {
+    static char nonTerminals[], terminals[];
+    static int nonTermLen, termLen;
+    static String grammar[][], first[], follow[];
+    public static void main(String args[]) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Enter the non-terminals:");
+        String nt = br.readLine();
+        nonTermLen = nt.length();
+        nonTerminals = nt.toCharArray();
+        System.out.println("Enter the terminals:");
+        String t = br.readLine();
+        termLen = t.length();
+        terminals = t.toCharArray();
+        System.out.println("Specify the grammar (Enter 9 for epsilon production):");
+        grammar = new String[nonTermLen][];
+        for (int i = 0; i < nonTermLen; i++) {
+            System.out.println("Enter the number of productions for " + nonTerminals[i]);
+            int n = Integer.parseInt(br.readLine());
+            grammar[i] = new String[n];
+            System.out.println("Enter the productions:");
+            for (int j = 0; j < n; j++)
+                grammar[i][j] = br.readLine();
+        }
+        first = new String[nonTermLen];
+        for (int i = 0; i < nonTermLen; i++)
+            first[i] = calculateFirst(i);
+        System.out.println("First Set:");
+        printSets(first);
+        follow = new String[nonTermLen];
+        for (int i = 0; i < nonTermLen; i++)
+            follow[i] = calculateFollow(i);
+        System.out.println("Follow Set:");
+        printSets(follow);
+    }
+    static String calculateFirst(int index) {
+        String temp = "";
+        for (String production: grammar[index]) {
+            char firstChar = production.charAt(0);
+            if (Character.isLowerCase(firstChar) || firstChar == '9')
+                temp += firstChar;
+            else
+                temp += calculateFirst(getIndex(firstChar));
+        }
+        return temp;
+    }
+    static String calculateFollow(int index) {
+        String temp = "";
+        if (index == 0)
+            temp = "$";
+        for (int j = 0; j < nonTermLen; j++) {
+            for (String production: grammar[j]) {
+                for (int k = 0; k < production.length(); k++) {
+                    if (production.charAt(k) == nonTerminals[index]) {
+                        if (k == production.length() - 1) {
+                            if (j < index)
+                                temp += follow[j];
+                        } else {
+                            int nextIndex = getIndex(production.charAt(k + 1));
+                            if (nextIndex != -1) {
+                                temp += first[nextIndex];
+                                if (first[nextIndex].contains("9") && k + 1 == production.length() - 1)
+                                    temp += follow[j];
+                            } else
+                                temp += production.charAt(k + 1);
+                        }
+                    }
+                }
+            }
+        }
+        return temp;
+    }
+    static void printSets(String[] set) {
+        for (String s: set)
+            System.out.println(removeDuplicates(s));
+    }
+    static int getIndex(char c) {
+        for (int i = 0; i < nonTermLen; i++) {
+            if (nonTerminals[i] == c)
+                return i;
+        }
+        return -1;
+    }
+    static String removeDuplicates(String str) {
+        char[] chars = str.toCharArray();
+        Set < Character > charSet = new LinkedHashSet < > ();
+        for (char c: chars)
+            charSet.add(c);
+        StringBuilder sb = new StringBuilder();
+        for (Character character: charSet)
+            sb.append(character);
+        return sb.toString();
+    }
+}
+
+
+//OUTPUT
+//Enter the number of productions: 1
+//S->Sa|Sb|Sc
+
+//S->SS'
+//S'->a|b|c
+
+EXP5
+
+import java.util.*;
+import java.io.*;
+public class Exp5 {
+    static char nonTerminals[], terminals[];
+    static int nonTermLen, termLen;
+    static String grammar[][], first[], follow[];
+    public static void main(String args[]) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Enter the non-terminals:");
+        String nt = br.readLine();
+        nonTermLen = nt.length();
+        nonTerminals = nt.toCharArray();
+        System.out.println("Enter the terminals:");
+        String t = br.readLine();
+        termLen = t.length();
+        terminals = t.toCharArray();
+        System.out.println("Specify the grammar (Enter 9 for epsilon production):");
+        grammar = new String[nonTermLen][];
+        for (int i = 0; i < nonTermLen; i++) {
+            System.out.println("Enter the number of productions for " + nonTerminals[i]);
+            int n = Integer.parseInt(br.readLine());
+            grammar[i] = new String[n];
+            System.out.println("Enter the productions:");
+            for (int j = 0; j < n; j++)
+                grammar[i][j] = br.readLine();
+        }
+        first = new String[nonTermLen];
+        for (int i = 0; i < nonTermLen; i++)
+            first[i] = calculateFirst(i);
+        System.out.println("First Set:");
+        printSets(first);
+        follow = new String[nonTermLen];
+        for (int i = 0; i < nonTermLen; i++)
+            follow[i] = calculateFollow(i);
+        System.out.println("Follow Set:");
+        printSets(follow);
+    }
+    static String calculateFirst(int index) {
+        String temp = "";
+        for (String production: grammar[index]) {
+            char firstChar = production.charAt(0);
+            if (Character.isLowerCase(firstChar) || firstChar == '9')
+                temp += firstChar;
+            else
+                temp += calculateFirst(getIndex(firstChar));
+        }
+        return temp;
+    }
+    static String calculateFollow(int index) {
+        String temp = "";
+        if (index == 0)
+            temp = "$";
+        for (int j = 0; j < nonTermLen; j++) {
+            for (String production: grammar[j]) {
+                for (int k = 0; k < production.length(); k++) {
+                    if (production.charAt(k) == nonTerminals[index]) {
+                        if (k == production.length() - 1) {
+                            if (j < index)
+                                temp += follow[j];
+                        } else {
+                            int nextIndex = getIndex(production.charAt(k + 1));
+                            if (nextIndex != -1) {
+                                temp += first[nextIndex];
+                                if (first[nextIndex].contains("9") && k + 1 == production.length() - 1)
+                                    temp += follow[j];
+                            } else
+                                temp += production.charAt(k + 1);
+                        }
+                    }
+                }
+            }
+        }
+        return temp;
+    }
+    static void printSets(String[] set) {
+        for (String s: set)
+            System.out.println(removeDuplicates(s));
+    }
+    static int getIndex(char c) {
+        for (int i = 0; i < nonTermLen; i++) {
+            if (nonTerminals[i] == c)
+                return i;
+        }
+        return -1;
+    }
+    static String removeDuplicates(String str) {
+        char[] chars = str.toCharArray();
+        Set < Character > charSet = new LinkedHashSet < > ();
+        for (char c: chars)
+            charSet.add(c);
+        StringBuilder sb = new StringBuilder();
+        for (Character character: charSet)
+            sb.append(character);
+        return sb.toString();
+    }
+}
+
+
+OUTPUT 
+
+Enter the non-terminals:
+EAB
+Enter the terminals:
+ilj
+Specify the grammar (Enter 9 for epsilon production):
+Enter the number of productions for E
+1
+Enter the productions:
+AB
+Enter the number of productions for A
+1
+Enter the productions:
+il
+Enter the number of productions for B
+1
+Enter the productions:
+j
+First Set:
+i
+i
+j
+Follow Set:
+$
+j
+$
+
+EXP7
+
+import java.util.Scanner;
+
+class ProductionRule {
+    String left;
+    String right;
+
+    ProductionRule(String left, String right) {
+        this.left = left;
+        this.right = right;
+    }
+}
+
+public class Exp7 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String input, stack = "";
+        int ruleCount;
+        System.out.println("Enter the number of production rules: ");
+        ruleCount = scanner.nextInt();
+        scanner.nextLine();
+        ProductionRule[] rules = new ProductionRule[ruleCount];
+        System.out.println("Enter the production rules (in the form 'left->right'): ");
+        for (int i = 0; i < ruleCount; i++) {
+            String[] temp = scanner.nextLine().split("->");
+            rules[i] = new ProductionRule(temp[0], temp[1]);
+        }
+        System.out.println("Enter the input string: ");
+        input = scanner.nextLine();
+        int i = 0;
+        System.out.println("Stack\tInputBuffer\tAction");
+        while (true) {
+            if (i < input.length()) {
+                char ch = input.charAt(i);
+                i++;
+                stack += ch;
+                System.out.print(stack + "\t");
+                System.out.print(input.substring(i) + "\t\tShift " + ch + "\n");
+            }
+            for (int j = 0; j < ruleCount; j++) {
+                int substringIndex = stack.indexOf(rules[j].right);
+                if (substringIndex != -1) {
+                    stack = stack.substring(0, substringIndex) + rules[j].left;
+                    System.out.print(stack + "\t");
+                    System.out.print(input.substring(i) + "\t\tReduce " + rules[j].left + "->" + rules[j].right + "\n");
+                    j = -1; 
+                }
+            }
+            if (stack.equals(rules[0].left) && i == input.length()) {
+                System.out.println("\nAccepted");
+                break;
+            }
+            if (i == input.length()) {
+                System.out.println("\nNot Accepted");
+                break;
+            }
+        }
+        scanner.close();
+    }
+}
+
+
+OUTPUT
+
+Enter the number of production rules:
+4
+Enter the production rules (in the form 'left->right'):
+E->E+E
+E->E*E
+E->(E)
+E->i
+Enter the input string:
+i*i+i
+Stack   InputBuffer     Action
+i       *i+i            Shift i
+E       *i+i            Reduce E->i
+E*      i+i             Shift *
+E*i     +i              Shift i
+E*E     +i              Reduce E->i
+E       +i              Reduce E->E*E
+E+      i               Shift +
+E+i                     Shift i
+E+E                     Reduce E->i
+E                       Reduce E->E+E
+
+Accepted
+
+EXP8
+
+import java.util.Scanner;
+
+public class Exp8 {
+    public static void main(String[] args) {
+        char[] stack = new char[20];
+        char[] ip = new char[20];
+        char[][][] opt = new char[10][10][1];
+        char[] ter = new char[10];
+        int i, j, k, n, top = 0, col = 0, row = 0;
+
+        Scanner scanner = new Scanner(System.in);
+
+        for (i = 0; i < 10; i++) {
+            stack[i] = 0;
+            ip[i] = 0;
+            for (j = 0; j < 10; j++) {
+                opt[i][j][0] = 0;
+            }
+        }
+
+        System.out.print("Enter the no. of terminals:");
+        n = scanner.nextInt();
+        System.out.print("\nEnter the terminals:");
+        ter = scanner.next().toCharArray();
+
+        System.out.println("\nEnter the table values:");
+        for (i = 0; i < n; i++) {
+            for (j = 0; j < n; j++) {
+                System.out.printf("\nEnter the value for %c %c:", ter[i], ter[j]);
+                opt[i][j] = scanner.next().toCharArray();
+            }
+        }
+
+        System.out.println("\nOPERATOR PRECEDENCE TABLE:");
+        for (i = 0; i < n; i++) {
+            System.out.print("\t" + ter[i]);
+        }
+        System.out.println();
+
+        for (i = 0; i < n; i++) {
+            System.out.println();
+            System.out.print(ter[i]);
+            for (j = 0; j < n; j++) {
+                System.out.print("\t" + opt[i][j][0]);
+            }
+        }
+
+        stack[top] = '$';
+        System.out.print("\nEnter the input string:");
+        String input = scanner.next();
+        ip = input.toCharArray();
+        i = 0;
+        System.out.println("\nSTACK\t\t\tINPUT STRING\t\t\tACTION");
+        System.out.print("\n" + String.valueOf(stack) + "\t" + input + "\t\t");
+        while (i <= input.length()) {
+            for (k = 0; k < n; k++) {
+                if (stack[top] == ter[k])
+                    col = k;
+                if (ip[i] == ter[k])
+                    row = k;
+            }
+
+            if ((stack[top] == '$') && (ip[i] == '$')) {
+                System.out.println("String is accepted");
+                break;
+            } else if ((opt[col][row][0] == '<') || (opt[col][row][0] == '=')) {
+                stack[++top] = opt[col][row][0];
+                stack[++top] = ip[i];
+                System.out.println("Shift " + ip[i]);
+                i++;
+            } else {
+                if (opt[col][row][0] == '>') {
+                    while (stack[top] != '<') {
+                        --top;
+                    }4
+
+                    top = top - 1;
+                    System.out.println("Reduce");
+                } else {
+                    System.out.println("\nString is not accepted");
+                    break;
+                }
+            }
+            System.out.println();
+            for (k = 0; k <= top; k++) {
+                System.out.print(stack[k]);
+            }
+            System.out.print("\t\t\t");
+            for (k = i; k < input.length(); k++) {
+                System.out.print(ip[k]);
+            }
+            System.out.print("\t\t\t");
+        }
+    }
+}
+
+OUTPUT
+
+
+Enter the no. of terminals:4
+
+Enter the terminals:+i*$
+
+Enter the table values:
+
+Enter the value for + +:>
+
+Enter the value for + i:<
+
+Enter the value for + *:>
+
+Enter the value for + $:>
+
+Enter the value for i +:>
+
+Enter the value for i i:>
+
+Enter the value for i *:<<
+
+Enter the value for i $:>
+
+Enter the value for * +:>
+
+Enter the value for * i:>
+
+Enter the value for * *:=
+
+Enter the value for * $:>
+
+Enter the value for $ +:<
+
+Enter the value for $ i:<
+
+Enter the value for $ *:<
+
+Enter the value for $ $:A
+
+OPERATOR PRECEDENCE TABLE:
+        +       i       *       $
+
++       >       <       >       >
+i       >       >       <       >
+*       >       >       =       >
+$       <       <       <       A
+
+Enter the input string:i+i*i$
+
+STACK                   INPUT STRING                    ACTION
+
+$                       	  i+i*i$          	    Shift i
+
+$<i                 	    +i*i$                  	   Reduce
+
+$                   	    +i*i$                         Shift +
+
+$<+                   	  i*i$                             Shift i
+ 
+$<+<i                 	  *i$                              Shift *
+
+$<+<i<*                	 i$                                Reduce
+
+$<+<i                  	 i$                                Reduce
+
+$<+                    	 i$                               Shift i
+
+$<+<i                   	$                                 Reduce
+
+$<+                    	 $                               Reduce
+
+$                     	  $                             String is accepted
+
+EXP9
+
+import java.util.*;
+public class StackAllocation {
+  public static void main(String[] args) {
+    // TODO Auto-generated method stub
+    Scanner sc = new Scanner(System.in);
+    System.out.println("Enter Size of the Stack : ");
+    int n = sc.nextInt();
+    Stack < Integer > s = new Stack < Integer > ();
+    while (true) {
+      System.out.println("Enter your option : ");
+      System.out.println("1.Push\n2.pop\n3.Display\n4.Exit");
+      int choice = sc.nextInt();
+      switch (choice) {
+      case 1:
+        if (s.size() >= n) {
+          System.out.println("Overflow");
+          break;
+        }
+        System.out.println("Enter element : ");
+        int k = sc.nextInt();
+        s.push(k);
+        break;
+      case 2:
+        if (s.isEmpty()) {
+          System.out.println("Underflow");
+          break;
+        }
+        System.out.println("Poped element : " + s.pop());
+        break;
+      case 3:
+        if (s.isEmpty()) {
+          System.out.println("Stack is empty");
+          break;
+        } else {
+          for (Integer e: s) {
+            System.out.println(e);
+          }
+        }
+        break;
+      case 4:
+        sc.close();
+        System.exit(0);
+      }
+    }
+  }
+}
+
+EXP10
+
+
+
+import java.util.*;
+
+class Instruction
+{
+    String op;    // operation
+    String arg1;  // first argument
+    String arg2;  // second argument
+    String result;// result
+
+    Instruction(String op, String arg1, String arg2, String result) 
+    {
+        this.op = op;
+        this.arg1 = arg1;
+        this.arg2 = arg2;
+        this.result = result;
+    }
+
+    @Override
+    public String toString() 
+    {
+        return result + " = " + arg1 + " " + op + " " + arg2;
+    }
+}
+
+class IntermediateCodeGenerator 
+{
+    private List<Instruction> instructions;
+    private Stack<String> operands;
+    private int tempCount;
+
+    IntermediateCodeGenerator()
+    {
+        instructions = new ArrayList<>();
+        operands = new Stack<>();
+        tempCount = 0;
+    }
+
+    public List<Instruction> generate(String expression) 
+    {
+        Stack<Character> operators = new Stack<>();
+        StringBuilder operand = new StringBuilder();
+
+        for (int i = 0; i < expression.length(); i++)
+        {
+            char token = expression.charAt(i);
+
+            if (Character.isWhitespace(token))
+            {
+                continue;
+            }
+
+            if (Character.isLetterOrDigit(token)) 
+            {
+                operand.append(token);
+                if (i == expression.length() - 1 || !Character.isLetterOrDigit(expression.charAt(i + 1))) 
+                {
+                    operands.push(operand.toString());
+                    operand.setLength(0);
+                }
+            } 
+            else if (token == '(') 
+            {
+                operators.push(token);
+            } 
+            else if (token == ')') 
+            {
+                while (!operators.isEmpty() && operators.peek() != '(')
+                {
+                    processOperator(operators.pop());
+                }
+                operators.pop();
+            }
+            else if (isOperator(token)) 
+            {
+                while (!operators.isEmpty() && precedence(token) <= precedence(operators.peek()))
+                {
+                    processOperator(operators.pop());
+                }
+                operators.push(token);
+            }
+        }
+
+        while (!operators.isEmpty())
+        {
+            processOperator(operators.pop());
+        }
+
+        return instructions;
+    }
+
+    private void processOperator(char operator)
+    {
+        String operand2 = operands.pop();
+        String operand1 = operands.pop();
+        String result = newTemp();
+        instructions.add(new Instruction(String.valueOf(operator), operand1, operand2, result));
+        operands.push(result);
+    }
+
+    private String newTemp()
+    {
+        return "t" + tempCount++;
+    }
+
+    private boolean isOperator(char token)
+    {
+        return token == '+' || token == '-' || token == '*' || token == '/';
+    }
+
+    private int precedence(char operator) 
+    {
+        switch (operator) 
+        {
+            case '+':
+            case '-':
+                return 1;
+            case '*':
+            case '/':
+                return 2;
+            default:
+                return -1;
+        }
+    }
+}
+
+ class Main
+{
+    public static void main(String[] args) 
+     {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter an arithmetic expression:");
+        String expression = scanner.nextLine();
+
+        IntermediateCodeGenerator icg = new IntermediateCodeGenerator();
+        List<Instruction> code = icg.generate(expression);
+
+        System.out.println("Intermediate Code:");
+        for (Instruction instr : code) {
+            System.out.println(instr);
+        }
+
+    }
+}
